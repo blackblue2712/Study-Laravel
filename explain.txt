@@ -1,0 +1,6 @@
+php artisan make:migration <name> --create=<name>
+php artisan make:migration <name> --talbe=<name>
+
+php artisan migrate:rollback				Xoá 1 bath gần nhất
+php artiasn migrate:reset					Xoá tất cả các bath gần nhất
+php artiasn migrate:refresh					Rollback tất cả và chạy lại <php artisan migrate>

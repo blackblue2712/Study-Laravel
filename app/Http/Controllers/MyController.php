@@ -48,5 +48,46 @@ class MyController extends Controller
     	return $req->cookie('course');
     }
 
+    public function postFile(Request $req){
+    	if( $req->hasFile('myFile') ){
+    		$file = $req->file('myFile');
+    		if( $file->getClientOriginalExtension('myFile') == 'jpg' ){
+    			$filename = $file->getClientOriginalName('myFile');
+    			$file->move('img', $filename); 		// destination (public/) - FileName	
+    			echo $filename;
+    		}else{
+    			echo 'fail';
+    		}
+    		
+    	}else{
+    		echo 'not has';
+    	}
+    }
 
+    public function getJson(){
+    	$json_arr = ['course' => 'laravel'];
+    	
+    	return Response()->json($json_arr);
+    }
+
+    public function myView(){
+    	return view('mview.index');
+    }
+
+    public function time($t){
+    	return view('time', ['time' => $t]); // Truyền biến t qua view
+    }
+
+    public function blade($str){
+    	$author = '<b>BlackBlue</b>';
+    	if($str == 'laravel')
+    		return view('pages.laravel', ['author' => $author]);
+    	if($str == 'php')
+    		return view('pages.php', ['author' => $author]);
+    }
 }
+
+
+
+
+
