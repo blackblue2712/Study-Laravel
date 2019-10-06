@@ -4,3 +4,52 @@ php artisan make:migration <name> --talbe=<name>
 php artisan migrate:rollback				Xoá 1 bath gần nhất
 php artiasn migrate:reset					Xoá tất cả các bath gần nhất
 php artiasn migrate:refresh					Rollback tất cả và chạy lại <php artisan migrate>
+
+DB::table('users')->increment('votes', 4);			Tăng cột vote ở bảng user lên 4 (+=4)
+DB::table('users')->decrement('votes', 4);
+
+
+
+$this->validate($req, 
+    		[
+    			'Ten' => 'required|min:3|max:30|unique:TheLoai,Ten'
+    		],
+    		[
+    			'Ten.required' => 'Bạn chưa nhập tên thể loại',
+    			'Ten.min' => 'Tên quá ngắn (từ 3 đến 30 kí tự)',
+    			'Ten.max' => 'Tên quá dài (từ 3 đến 30 kí tự)',
+    			'Ten.unique' => 'Tên đã tồn tại'
+    		]
+    	);
+
+orWhere
+whereIn
+whereBetween
+whereNotBetween
+insertGetID: Lấy ra id đã insert
+
+//MODEL
+public $timestamps = fasle  //Không lấy ra 2 cột created_at và updated_at
+protected $hidden =  ['password', 'remeber_token']      // Không lấy ra 2 cột này
+protected $fillable = ['id', 'name']      // lấy ra 2 cột này
+
+$data =data App\Product::whereRaw('price = ? AND id = ?', [5000, 1])->get()->toArray();     // Truy vấn có tham số
+
+Route::any('{all?}', 'WelcomeController@index')->where('all', '(.*)');      // Tất cả các request không hợp lệ sẽ chuyển về index
+{{$erros->first(name)}}     // In ra lỗi ở bất cứ đâu theo tên của input
+
+
+// View
+return vỉew('/', compact(name, value))  // Like route('/')->with([name => value, name => value]), but compact not delete after refresh
+
+// REQUEST
+php artisan make:request UserReques
+t
+// Response 
+return redirect()->back()           // Quay lại đường dẫn trước đó
+return Response::download('public/download/test.rar')       // Download file tại đường dẫn
+return Response::download('public/download/test.rar')->deleteFileAfterSend(true)       // Xoá luôn file ở đường dẫn đó sau khi download
+
+// AUTHENTICATION
+
+Hash::make(123456)      // Mã hoá password 64 kí tự theo kiểu hash (md5 chỉ 32 kí tự)

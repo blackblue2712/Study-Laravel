@@ -118,7 +118,7 @@ Route::get('database', function(){
 		$table->increments('id');
 		$table->string('name', 50);
 		$table->string('author')->default('linz');
-		$table->time('create')->nullable();
+		// $table->time('create')->nullable();
 		$table->integer('id_book')->unsigned();
 		$table->foreign('id_book')->references('id')->on('category');
 	});
@@ -132,6 +132,7 @@ Route::get('createCate', function(){
 	});
 	echo "Category Created";
 });
+
 
 // Route::get('rename', function(){
 // 	Schema::rename('book')
@@ -209,3 +210,207 @@ Route::get('qb/orderBy', function(){
 		echo '<hr />';
 	}
 });
+
+Route::get('qb/update', function(){
+	DB::table('users')->where('id', 1)->update(['name' => 'Mio', 'email' => 'mio@gmail.com']);
+	echo 'updated';
+});
+
+Route::get('qb/delete', function(){
+	DB::table('users')->where('id', 1)->delete();
+	echo 'deleted';
+});
+
+Route::get('qb/truncate', function(){
+	DB::table('users')->truncate(); 		// Xoá hết và reset các increment
+	echo 'deleted';
+});
+
+// MODEL
+
+
+Route::get('model/save', function(){
+	$user = new App\User;
+	$user->name = 'miku';
+	$user->email = 'miku@gmail.com';
+	$user->password = bcrypt('123');
+
+	$user->save();
+
+	echo 'saved';
+});
+
+Route::get('model/query', function(){
+	$user = App\User::find(4);				//find(primary key)
+	echo  $user->name;
+});
+
+Route::get('mdoel/category/save', function(){
+	$cate = new App\Category;
+	$cate->name = 'KinhDi';
+
+	$cate->save();
+});
+
+Route::get('mdoel/category/save/{name}', function($name){
+	$cate = new App\Category;
+	$cate->name = $name;
+
+	$cate->save();
+});
+
+Route::get('mdoel/category/all', function(){
+	// $cate = App\Category::all();
+	// $cate = App\Category::all()->toArray();
+	$cate = App\Category::all()->toJson();
+
+	echo $cate;
+});
+
+Route::get('mdoel/category/get', function(){
+	$cate = App\Category::where('id', 1)->get()->toArray();
+
+	echo $cate[0]['name'];
+});
+
+
+Route::get('mdoel/category/destroy', function(){
+	$cate = App\Category::destroy(2);		//destroy(primary key)
+
+});
+
+
+// Liên kết table
+Route::get('lienketBook', function(){
+	$data = App\Book::find(3)->book->toArray();
+	echo "<pre>";
+	print_r($data);
+	echo "</pre>";
+
+	/**
+	 * [id] => 3
+	 * [name] => Haihuoc
+	 */
+	
+});
+
+Route::get('lienketCategory', function(){
+	$data = App\Category::find(1)->category->toArray();
+	echo "<pre>";
+	print_r($data);
+	echo "</pre>";
+
+	/**
+	 * [0] => Array
+        (
+            [id] => 1
+            [name] => C
+            [author] => linz
+            [id_category] => 1
+        )
+
+     * [1] => Array
+        (
+            [id] => 2
+            [name] => C++
+            [author] => linz
+            [id_category] => 1
+        )
+	 */
+	
+});
+
+// MIDDLEWARE
+
+Route::get('score', function(){
+	echo 'Bạn đã đủ điểm';
+})->middleware('MyMiddle')->name('score');
+
+Route::get('error', function(){
+	echo 'Bạn chưa đủ điểm';
+})->name('error');
+
+Route::get('enterScore', function(){
+	return view('enterScore');
+});
+
+
+// AUTHENTICATE
+Route::get('login', function(){
+	return view('login');
+});
+Route::get('loginHack', function(){
+	return view('index');
+});
+Route::post('checklogin', 'AuthController@login')->name('checklogin');
+Route::get('logout', 'AuthController@logout');
+
+
+// SESSION
+Route::group(['middleware' => ['web']], function(){
+
+	Route::get('session', function(){
+		Session::put('course', 'laravel');
+
+		Session::flash('author', 'linz');			// Truy xuất 1 lần rồi tự động xoá (có thể áp dụng đẻ show error)
+
+		echo Session::get('course');
+		echo Session::get('author');
+		// echo session('course');
+
+
+
+		// Session::forget('course');
+		// Session::flush();				// Xoá tất cả các session
+
+		if(Session::has('course'))
+			echo '<br>exists';
+		else
+			echo '<br>not exists';
+	});
+
+	Route::get('getFlash', function(){
+		echo Session::get('author');
+	});
+
+
+});
+
+
+Route::get('listBook', 'BookController@index');
+
+Route::get('thamsomacdinh/{id?}', function($id=1){
+	return $id;
+});
+
+Route::get('check-view', function(){
+	if(view()->exists('book')){
+		return 'Exists';
+	}else{
+		return "Not Exists";
+	}
+});
+
+Route::get('marquee', function(){
+	return view('myView');
+});
+
+// MACRO
+Route::get('response/macro/cap', function(){
+	return response()->cap('hello mother fucker');
+});
+
+Route::get('response/macro/contact', function(){
+	return response()->contact('/contact');
+});
+
+// Route::resource('hocsinh', 'HocSinhController');
+Route::get('hocsinh/list', 'HocSinhController@list');
+
+Route::get('hocsinh/create', 'HocSinhController@getCreate');
+Route::post('hocsinh/create', 'HocSinhController@postCreate');
+
+Route::get('hocsinh/destroy/{id}', 'HocSinhController@destroy');
+
+Route::get('hocsinh/edit/{id}', 'HocSinhController@getEdit');
+Route::get('hocsinh/edit/{id}', 'HocSinhController@postEdit');
